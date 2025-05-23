@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+app.use(express.json())
 
 let persons = [
     { 
@@ -55,6 +56,25 @@ app.delete('/api/persons/:id', (request, response)=>{
 
   response.status(204).end()
 })
+
+
+app.post('/api/persons/', (request, response)=>{
+  const newPerson = request.body
+  newPerson.id = generateID();
+
+  persons = persons.concat(newPerson)
+  response.json(newPerson)
+})
+
+const generateID = ()=> {
+  const caracteres = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  let id = '';
+  for (let i = 0; i < 5; i++) {
+    const indiceAleatorio = Math.floor(Math.random() * caracteres.length);
+    id += caracteres.charAt(indiceAleatorio);
+  }
+  return Date.now() + "_" + id;
+}
 
 const PORT = 3001
 app.listen(PORT, () => {
