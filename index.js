@@ -59,11 +59,30 @@ app.delete('/api/persons/:id', (request, response)=>{
 
 
 app.post('/api/persons/', (request, response)=>{
-  const newPerson = request.body
-  newPerson.id = generateID();
+  const {name, phone} = request.body
+  
+  if(!name || !phone){
+    return response.status(400).json({
+      error: 'Name and phone number are required'
+    })
+  }
+  // Validar si el nombre ya está en la agenda
+  const nameExists = persons.some(person => person.name.toLowerCase() === name.toLowerCase());
+  if (nameExists) {
+    return response.status(409).json({ 
+      error: 'Name already exists in the phonebook' 
+    });
+  }
 
-  persons = persons.concat(newPerson)
-  response.json(newPerson)
+  // Crear y agregar nueva persona
+  const newPerson = {
+    id: generateID(),
+    name,
+    phone
+  };
+
+  persons = persons.concat(newPerson);
+  response.status(201).json(newPerson);
 })
 
 const generateID = ()=> {

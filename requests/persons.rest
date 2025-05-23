@@ -16,5 +16,5 @@ Content-Type: application/json
 
 {
     "name": "Guillermo",
-    "phone": "951 640 29 40"
+    "phone": ""
 }
