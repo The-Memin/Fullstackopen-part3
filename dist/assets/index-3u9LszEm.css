@@ -1,0 +1,1 @@
+:root{--color-1: green;--color-2: orange;--color-3: red;--color-4: blue}.label{background-color:#d3d3d3;padding:.6em;border-radius:6px;font-size:18px;border:2px solid lightgray;margin-bottom:1em}.success{color:var(--color-1);border-color:var(--color-1)}.delete{color:var(--color-2);border-color:var(--color-2)}.error{color:var(--color-3);border-color:var(--color-3)}
