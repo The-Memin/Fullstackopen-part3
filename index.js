@@ -49,10 +49,7 @@ app.delete('/api/people/:id', (request, response, next)=>{
   Person.findByIdAndDelete(request.params.id).then( result =>{
     response.status(204).end()
   })
-  .catch(error => {
-    console.log(error)
-    response.status(500).end()
-  })
+  .catch(error => next(error))
 })
 
 
@@ -72,6 +69,23 @@ app.post('/api/people/', (request, response)=>{
   })
 })
 
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+// controlador de solicitudes con endpoint desconocido
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
