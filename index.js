@@ -6,13 +6,11 @@ const app = express()
 const Person = require('./models/person')
 
 
+app.use(express.static('build'))
 app.use(express.json())
-
 morgan.token('body', (req) => {
   return req.method === 'POST' ? JSON.stringify(req.body) : '';
 });
-
-app.use(express.static('dist'))
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
 app.use(cors())
 
@@ -36,15 +34,24 @@ app.get('/info', (request, response) =>{
     response.send(html_response)
 })
 
-app.get('/api/people/:id', (request, response)=>{
+app.get('/api/people/:id', (request, response, next)=>{
   Person.findById(request.params.id).then( person =>{
-    response.json(person)
+    if(person){
+      response.json(person)
+    }else{
+      response.status(404).end()
+    }
   })
+  .catch(error =>next(error))
 })
 
-app.delete('/api/people/:id', (request, response)=>{
-  Person.deleteOne({_id: request.params.id}).then(_ =>{
-    response.json(_)
+app.delete('/api/people/:id', (request, response, next)=>{
+  Person.findByIdAndDelete(request.params.id).then( result =>{
+    response.status(204).end()
+  })
+  .catch(error => {
+    console.log(error)
+    response.status(500).end()
   })
 })
 
