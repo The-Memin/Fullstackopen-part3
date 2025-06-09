@@ -24,14 +24,19 @@ app.get('/api/people', (request, response) =>{
 })
 
 app.get('/info', (request, response) =>{
-    const currentDate = new Date()
-
-    const html_response = `<div>
-                            <p>Phonebook has info for ${people.length} people</p>
-                            <p>${currentDate}</p>
-                          </div>`
-
-    response.send(html_response)
+  Person.countDocuments({})
+    .then(count => {
+      const currentDate = new Date()
+      const html_response = `<div>
+                                <p>Phonebook has info for ${count} people</p>
+                                <p>${currentDate}</p>
+                              </div>`
+      response.send(html_response)
+    })
+    .catch(error => {
+      console.error('Error counting people:', error)
+      response.status(500).send('Error retrieving info')
+    })
 })
 
 app.get('/api/people/:id', (request, response, next)=>{
