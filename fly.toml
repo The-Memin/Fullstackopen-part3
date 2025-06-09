@@ -1,15 +1,15 @@
-# fly.toml app configuration file generated for thephonebook-backend on 2025-05-27T11:53:18-06:00
+# fly.toml app configuration file generated for thephonebook-guill on 2025-06-06T15:18:43-06:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'thephonebook-backend'
+app = 'thephonebook-guill'
 primary_region = 'qro'
 
 [build]
 
 [env]
-  PORT = "3000"
+  PORT = '3000'
 
 [http_service]
   internal_port = 3000
