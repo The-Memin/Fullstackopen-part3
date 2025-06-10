@@ -6,7 +6,7 @@ const app = express()
 const Person = require('./models/person')
 
 
-app.use(express.static('build'))
+app.use(express.static('dist'))
 app.use(express.json())
 morgan.token('body', (req) => {
   return req.method === 'POST' ? JSON.stringify(req.body) : '';
@@ -14,11 +14,9 @@ morgan.token('body', (req) => {
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
 app.use(cors())
 
-let people = []
-
 app.get('/api/people', (request, response) =>{
   Person.find({}).then(p => {
-    people = p
+    console.log(p)
     response.json(p)
   })
 })
@@ -57,7 +55,7 @@ app.delete('/api/people/:id', (request, response, next)=>{
   .catch(error => next(error))
 })
 
-app.put('/api/people/:id', (request, response)=>{
+app.put('/api/people/:id', (request, response, next)=>{
   console.log(request.body)
   const body = request.body
   const person = {
@@ -72,20 +70,19 @@ app.put('/api/people/:id', (request, response)=>{
     .catch(error => next(error))
 })
 
-app.post('/api/people/', (request, response)=>{
-  const body = request.body
-  if (body.name === undefined) {
-    return response.status(400).json({ error: 'content missing' })
-  }
+app.post('/api/people/', (request, response, next)=>{
+  const {name, phone} = request.body
   // Crear y agregar nueva persona
-  const person = Person({
-    name: body.name,
-    phone: body.phone
-  });
-
-  person.save().then(savedPerson => {
-    response.json(savedPerson)
-  })
+  Person
+    .create({
+      name: name,
+      phone: phone
+    })
+    .then( createdPerson => response.json(createdPerson))
+    .catch(error => {
+      console.log(error.message)
+      next(error)
+    })
 })
 
 const unknownEndpoint = (request, response) => {
@@ -100,7 +97,9 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } 
+  }else if(error.name === 'ValidationError'){
+    return response.status(400).json({ error: error.message })
+  }
 
   next(error)
 }
