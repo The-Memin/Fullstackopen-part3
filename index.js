@@ -14,14 +14,14 @@ morgan.token('body', (req) => {
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
 app.use(cors())
 
-app.get('/api/people', (request, response) =>{
+app.get('/api/people', (request, response) => {
   Person.find({}).then(p => {
     console.log(p)
     response.json(p)
   })
 })
 
-app.get('/info', (request, response) =>{
+app.get('/info', (request, response) => {
   Person.countDocuments({})
     .then(count => {
       const currentDate = new Date()
@@ -37,25 +37,30 @@ app.get('/info', (request, response) =>{
     })
 })
 
-app.get('/api/people/:id', (request, response, next)=>{
-  Person.findById(request.params.id).then( person =>{
+app.get('/api/people/:id', (request, response, next) => {
+  Person.findById(request.params.id).then( person => {
     if(person){
       response.json(person)
     }else{
       response.status(404).end()
     }
   })
-  .catch(error =>next(error))
+  .catch(error => next(error))
 })
 
-app.delete('/api/people/:id', (request, response, next)=>{
-  Person.findByIdAndDelete(request.params.id).then( result =>{
-    response.status(204).end()
+app.delete('/api/people/:id', (request, response, next) => {
+  Person.findByIdAndDelete(request.params.id).then( result => {
+    if (result) {
+      console.log(`Deleted person: ${result.name}`);
+      response.status(204).end();
+    } else {
+      response.status(404).json({ error: 'Person not found' });
+    }
   })
   .catch(error => next(error))
 })
 
-app.put('/api/people/:id', (request, response, next)=>{
+app.put('/api/people/:id', (request, response, next) => {
   console.log(request.body)
   const body = request.body
   const person = {
@@ -74,8 +79,8 @@ app.put('/api/people/:id', (request, response, next)=>{
     .catch(error => next(error))
 })
 
-app.post('/api/people/', (request, response, next)=>{
-  const {name, phone} = request.body
+app.post('/api/people/', (request, response, next) => {
+  const { name, phone } = request.body
   // Crear y agregar nueva persona
   Person
     .create({

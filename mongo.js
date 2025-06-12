@@ -7,7 +7,7 @@ if(process.argv.length < 3){
 
 const password = process.argv[2]
 
-const url = 
+const url =
     `mongodb+srv://guillejuma:${password}@cluster0.lnm2x0o.mongodb.net/noteBookApp?retryWrites=true&w=majority&appName=Cluster0`
 
 mongoose.set('strictQuery', false)
@@ -46,7 +46,7 @@ if (process.argv.length === 3) {
         phone: newPhone
     })
 
-    person.save().then(result =>{
+    person.save().then(result => {
         console.log(`added ${result.name} number ${result.phone} to phonebook`)
         mongoose.connection.close()
     })
